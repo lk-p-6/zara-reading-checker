@@ -83,7 +83,8 @@ HTML_TEMPLATE = """
       background-color: transparent;
     }
     .navbar img {
-      height: 30px;
+      height: 102px;
+      max-width: 100%;
     }
     h1 {
       font-size: 22px;
@@ -136,12 +137,16 @@ HTML_TEMPLATE = """
       h1 {
         font-size: 18px;
       }
+      .navbar img {
+        height: auto;
+        max-height: 90px;
+      }
     }
   </style>
 </head>
 <body>
   <div class=\"navbar\">
-    <img src=\"https://upload.wikimedia.org/wikipedia/commons/8/8e/Zara_Logo_2019.png\" alt=\"ZARA Logo\">
+    <img src=\"{{ url_for('static', filename='zara-logo.png') }}\" alt=\"ZARA Logo\">
   </div>
 
   <h1>{{ t['title'] }}</h1>
@@ -214,8 +219,10 @@ HTML_TEMPLATE = """
 
 import math
 
+
 def all_section_calc(reading, retail):
     return f"{math.floor((reading/retail)*100)}% ~ ({math.floor((reading/retail) * 10**3) / 10**3})"
+
 
 def each_section_calc(data, retail):
     man = data['man_clothing'] + data['man_shoes'] + data['man_perfume']
@@ -224,12 +231,14 @@ def each_section_calc(data, retail):
     total_reading = man + woman + kids
     return all_section_calc(total_reading, retail)
 
+
 @app.route('/', methods=['GET'])
 def index():
     lang = request.args.get('lang', 'en')
     mode = request.args.get('mode', '')
     t = LANGUAGES.get(lang, LANGUAGES['en'])
     return render_template_string(HTML_TEMPLATE, mode=mode, result=None, t=t, lang=lang)
+
 
 @app.route('/calculate', methods=['POST'])
 def calculate():
@@ -278,6 +287,7 @@ def calculate():
         return render_template_string(HTML_TEMPLATE, mode=mode, result=None, t=t, lang=lang)
 
     return render_template_string(HTML_TEMPLATE, mode=mode, result=result, t=t, lang=lang)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
